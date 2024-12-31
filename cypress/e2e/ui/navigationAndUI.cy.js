@@ -1,35 +1,37 @@
+import { uiBaseURL } from "../../support/data";
+
 describe('Navigation and UI Testing', () => {
-    beforeEach(() => {
-      cy.visit('https://www.saucedemo.com/v1/');
-      cy.login('standard_user', 'secret_sauce');
-    });
-  
-    it('Test Menu Button Functionality', () => {
-      cy.get('.bm-burger-button').click(); // Open menu
-      cy.get('.bm-menu-wrap').should('be.visible'); // Verify menu is visible
-    });
-  
-    it('Verify Sidebar Close Button', () => {
-      cy.get('.bm-burger-button').click(); // Open menu
-      cy.get('.bm-cross-button').click(); // Close menu
-      cy.get('.bm-menu-wrap').should('not.exist'); // Verify menu closed
-    });
-  
-    it('Logout from Sidebar', () => {
-      cy.get('.bm-burger-button').click();
-      cy.contains('Logout').click();
-      cy.url().should('include', 'index.html'); // Verify redirected to login page
-    });
-  
-    it('Reset App State', () => {
-      cy.get('.btn_inventory').first().click(); // Add item to cart
-      cy.get('.bm-burger-button').click(); // Open menu
-      cy.contains('Reset App State').click(); // Reset state
-      cy.get('.shopping_cart_badge').should('not.exist'); // Verify cart is empty
-    });
-  
-    it('Cross-Browser Testing', () => {
-      cy.log('Test manually on multiple browsers for compatibility.');
-    });
+  beforeEach(() => {
+    cy.visit(uiBaseURL);
+    cy.login('standard_user', 'secret_sauce');
   });
-  
+
+  it('Test Menu Button Functionality', () => {
+    cy.get('.bm-burger-button').click();
+    cy.get('.bm-menu-wrap')
+      .should('have.attr', 'style')
+      .and('not.include', 'transform: translate3d(-100%, 0px, 0px)');
+  });
+
+  it('Verify Sidebar Close Button', () => {
+    cy.get('.bm-burger-button').click();
+    cy.get('.bm-cross-button').click();
+    cy.wait(1000); // wait until close
+    cy.get('.bm-menu-wrap')
+      .should('have.attr', 'style')
+      .and('include', 'transform: translate3d(-100%, 0px, 0px)');
+  });
+
+  it('Logout from Sidebar', () => {
+    cy.get('.bm-burger-button').click();
+    cy.contains('Logout').click();
+    cy.url().should('include', 'index.html');
+  });
+
+  it('Reset App State', () => {
+    cy.get('.btn_inventory').first().click();
+    cy.get('.bm-burger-button').click();
+    cy.contains('Reset App State').click();
+    cy.get('.shopping_cart_badge').should('not.exist');
+  });
+});

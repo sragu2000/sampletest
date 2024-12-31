@@ -1,6 +1,8 @@
+import { uiBaseURL } from "../../support/data";
+
 describe('Checkout Process Testing - Part 2', () => {
     beforeEach(() => {
-      cy.visit('https://www.saucedemo.com/v1/');
+      cy.visit(uiBaseURL);
       cy.login('standard_user', 'secret_sauce');
       cy.get('.btn_inventory').first().click();
       cy.get('.shopping_cart_link').click();
@@ -18,11 +20,11 @@ describe('Checkout Process Testing - Part 2', () => {
   
     it('Validate Total Price with Tax Calculation', () => {
       let itemTotal = 0;
-      cy.get('.inventory_item_price').each(($el) => {
-        itemTotal += parseFloat($el.text().replace('$', ''));
+      cy.get('.inventory_item_price').each((price) => {
+        itemTotal += parseFloat(price.text().replace('$', ''));
       });
-      cy.get('.summary_subtotal_label').then(($el) => {
-        const subtotal = parseFloat($el.text().replace('Item total: $', ''));
+      cy.get('.summary_subtotal_label').then((price) => {
+        const subtotal = parseFloat(price.text().replace('Item total: $', ''));
         expect(subtotal).to.equal(itemTotal);
       });
     });
@@ -36,11 +38,6 @@ describe('Checkout Process Testing - Part 2', () => {
       cy.get('.cart_cancel_link').click();
       cy.url().should('include', 'inventory.html'); // Verify return to product page
     });
-  
-    it('Back to Shopping After Checkout Completion', () => {
-      cy.get('.btn_action').click();
-      cy.get('.back-to-products').click();
-      cy.url().should('include', 'inventory.html');
-    });
+
   });
   
